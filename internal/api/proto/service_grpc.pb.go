@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: api/urlshorter/service.proto
+// source: api/proto/service.proto
 
 package urlshorter
 
@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type URLshorterClient interface {
-	Get(ctx context.Context, in *ShortURL, opts ...grpc.CallOption) (*LongURL, error)
-	Post(ctx context.Context, in *LongURL, opts ...grpc.CallOption) (*ShortURL, error)
+	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+	Post(ctx context.Context, in *PostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 }
 
 type uRLshorterClient struct {
@@ -34,8 +34,8 @@ func NewURLshorterClient(cc grpc.ClientConnInterface) URLshorterClient {
 	return &uRLshorterClient{cc}
 }
 
-func (c *uRLshorterClient) Get(ctx context.Context, in *ShortURL, opts ...grpc.CallOption) (*LongURL, error) {
-	out := new(LongURL)
+func (c *uRLshorterClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+	out := new(GetResponse)
 	err := c.cc.Invoke(ctx, "/urlshorter.URLshorter/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -43,8 +43,8 @@ func (c *uRLshorterClient) Get(ctx context.Context, in *ShortURL, opts ...grpc.C
 	return out, nil
 }
 
-func (c *uRLshorterClient) Post(ctx context.Context, in *LongURL, opts ...grpc.CallOption) (*ShortURL, error) {
-	out := new(ShortURL)
+func (c *uRLshorterClient) Post(ctx context.Context, in *PostRequest, opts ...grpc.CallOption) (*PostResponse, error) {
+	out := new(PostResponse)
 	err := c.cc.Invoke(ctx, "/urlshorter.URLshorter/Post", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -56,8 +56,8 @@ func (c *uRLshorterClient) Post(ctx context.Context, in *LongURL, opts ...grpc.C
 // All implementations must embed UnimplementedURLshorterServer
 // for forward compatibility
 type URLshorterServer interface {
-	Get(context.Context, *ShortURL) (*LongURL, error)
-	Post(context.Context, *LongURL) (*ShortURL, error)
+	Get(context.Context, *GetRequest) (*GetResponse, error)
+	Post(context.Context, *PostRequest) (*PostResponse, error)
 	mustEmbedUnimplementedURLshorterServer()
 }
 
@@ -65,10 +65,10 @@ type URLshorterServer interface {
 type UnimplementedURLshorterServer struct {
 }
 
-func (UnimplementedURLshorterServer) Get(context.Context, *ShortURL) (*LongURL, error) {
+func (UnimplementedURLshorterServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedURLshorterServer) Post(context.Context, *LongURL) (*ShortURL, error) {
+func (UnimplementedURLshorterServer) Post(context.Context, *PostRequest) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Post not implemented")
 }
 func (UnimplementedURLshorterServer) mustEmbedUnimplementedURLshorterServer() {}
@@ -85,7 +85,7 @@ func RegisterURLshorterServer(s grpc.ServiceRegistrar, srv URLshorterServer) {
 }
 
 func _URLshorter_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ShortURL)
+	in := new(GetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -97,13 +97,13 @@ func _URLshorter_Get_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: "/urlshorter.URLshorter/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(URLshorterServer).Get(ctx, req.(*ShortURL))
+		return srv.(URLshorterServer).Get(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _URLshorter_Post_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LongURL)
+	in := new(PostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func _URLshorter_Post_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/urlshorter.URLshorter/Post",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(URLshorterServer).Post(ctx, req.(*LongURL))
+		return srv.(URLshorterServer).Post(ctx, req.(*PostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -137,5 +137,5 @@ var URLshorter_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/urlshorter/service.proto",
+	Metadata: "api/proto/service.proto",
 }

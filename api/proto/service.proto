@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package urlshorter;
+
+option go_package = "github.com/Scr3amz/URLshorter/internal/urlshorter;urlshorter";
+
+service URLshorter {
+    rpc Get(GetRequest) returns (GetResponse);
+    rpc Post(PostRequest) returns (PostResponse);
+}
+
+message GetRequest {
+    string shortURL = 1;
+}
+
+message GetResponse {
+    string longURL = 1;
+}
+
+message PostRequest {
+    string longURL = 1;
+}
+
+message PostResponse {
+    string shortURL = 1;
+}
