@@ -7,6 +7,7 @@ import (
 	"net"
 
 	desc "github.com/Scr3amz/URLshorter/internal/api/proto"
+	ser "github.com/Scr3amz/URLshorter/internal/server"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -27,7 +28,7 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 func (s *server) Post(ctx context.Context, req *desc.PostRequest) (*desc.PostResponse, error) {
 	log.Println("Я положил ссылку в БД и вернул сокращённую")
 	return &desc.PostResponse{
-		ShortURL: "https://urlshorter",
+		ShortURL: ser.ShortURL(req.GetLongURL()),
 	}, nil
 }
 
