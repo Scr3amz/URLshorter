@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/Scr3amz/URLshorter/config"
 	desc "github.com/Scr3amz/URLshorter/internal/api/proto"
 	ser "github.com/Scr3amz/URLshorter/internal/server"
 	"google.golang.org/grpc"
@@ -33,7 +34,12 @@ func (s *server) Post(ctx context.Context, req *desc.PostRequest) (*desc.PostRes
 }
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
+	config, err := config.LoadConfig("./", "data", "env")
+	if err != nil {
+		log.Fatalf("Error occured while reading the config file\nError: %v\n", err)
+	}
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.GrpcPort))
 	if err != nil {
 		log.Fatalf("Failed to listen\nError: %v\n", err)
 	}
@@ -42,7 +48,7 @@ func main() {
 	reflection.Register(s)
 	desc.RegisterURLshorterServer(s, &server{})
 
-	log.Printf("Server listening at localhost:%d", grpcPort)
+	log.Printf("Server listening at localhost:%d", config.GrpcPort)
 
 	if err = s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve\nError: %v\n", err)
