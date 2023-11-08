@@ -1,8 +1,8 @@
 CREATE TABLE public."urls"
 (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY,
-    "longURL" text NOT NULL,
-    "shortURL" character varying(29) NOT NULL,
+    "longurl" text NOT NULL,
+    "shorturl" character varying(29) NOT NULL,
     PRIMARY KEY (id)
 );
 

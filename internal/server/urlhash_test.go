@@ -39,7 +39,7 @@ func Test_shortHash(t *testing.T) {
 	}
 }
 
-func TestShortURL(t *testing.T) {
+func TestShortURLHashed(t *testing.T) {
 	type args struct {
 		longURL string
 	}
@@ -67,7 +67,7 @@ func TestShortURL(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ShortURL(tt.args.longURL); got != tt.want {
+			if got := ShortURLHashed(tt.args.longURL); got != tt.want {
 				t.Errorf("ShortURL() = %v, want %v", got, tt.want)
 			}
 		})

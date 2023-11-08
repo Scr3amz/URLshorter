@@ -12,7 +12,7 @@ func shortHash(s string) string {
 	return string(hash10)
 }
 
-func ShortURL(longURL string) string {
+func ShortURLHashed(longURL string) string {
 	hash := shortHash(longURL)
 	return fmt.Sprintf("https://urlshorter/%s", hash)
 }

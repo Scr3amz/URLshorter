@@ -65,19 +65,18 @@ func main() {
 }
 
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	var longURL, shortURL string
 	url := urls.URLs{}
-	shortURL = req.GetShortURL()
+	shortURL := req.GetShortURL()
 	url.ShortURL = shortURL
-	
+
 	url, err := Repository.FindShort(ctx, url)
 	if err != nil {
-		log.Printf("Сокращённая ссылка не была найдена")
+		log.Printf("Сокращённая ссылка не была найдена %v", err)
 		return nil, err
 	}
-	longURL = url.LongURL
+	longURL := url.LongURL
 
-	log.Println("Я вернул оригинальную ссылку")
+	log.Println("Оригинальная ссылка получена")
 	return &desc.GetResponse{
 		LongURL: longURL,
 	}, nil
@@ -87,19 +86,30 @@ func (s *server) Post(ctx context.Context, req *desc.PostRequest) (*desc.PostRes
 	var longURL, shortURL string
 	url := urls.URLs{}
 	longURL = req.GetLongURL()
+	if longURL == "" {
+		log.Printf("Ссылка не должна быть пустой")
+		return &desc.PostResponse{}, nil
+	}
+	if len(longURL) > 10000 {
+		log.Printf("Ссылка слишком длинная")
+		return &desc.PostResponse{}, nil
+	}
 	url.LongURL = longURL
 	url, err := Repository.FindLong(ctx, url)
 	if err != nil {
-		shortURL = ser.ShortURL(longURL)
+		shortURL = ser.ShortURLHashed(longURL)
 		url.LongURL = longURL
 		url.ShortURL = shortURL
-		if err := Repository.Create(ctx, &url); err != nil {
+		for _, err = Repository.FindShort(ctx, url); err == nil; {
+			url.ShortURL = ser.ShortURLHashed(url.ShortURL)
+		}
+		if err = Repository.Create(ctx, &url); err != nil {
 			return nil, err
 		}
 	}
 	shortURL = url.ShortURL
 
-	log.Println("Я положил ссылку в БД и вернул сокращённую")
+	log.Println("Сокращённая ссылка получена")
 	return &desc.PostResponse{
 		ShortURL: shortURL,
 	}, nil
