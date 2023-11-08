@@ -21,8 +21,6 @@ import (
 
 var Repository urls.Repository
 
-
-
 type server struct {
 	desc.UnimplementedURLshorterServer
 }
@@ -67,23 +65,39 @@ func main() {
 }
 
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
+	var longURL, shortURL string
+	url := urls.URLs{}
+	shortURL = req.GetShortURL()
+	url.ShortURL = shortURL
+	
+	url, err := Repository.FindShort(ctx, url)
+	if err != nil {
+		log.Printf("Сокращённая ссылка не была найдена")
+		return nil, err
+	}
+	longURL = url.LongURL
+
 	log.Println("Я вернул оригинальную ссылку")
 	return &desc.GetResponse{
-		LongURL: "https://www.google.com",
+		LongURL: longURL,
 	}, nil
 }
 
 func (s *server) Post(ctx context.Context, req *desc.PostRequest) (*desc.PostResponse, error) {
-	longURL := req.GetLongURL()
-	shortURL := ser.ShortURL(longURL)
-	url:= urls.URLs {
-		LongURL: longURL,
-		ShortURL: shortURL,
+	var longURL, shortURL string
+	url := urls.URLs{}
+	longURL = req.GetLongURL()
+	url.LongURL = longURL
+	url, err := Repository.FindLong(ctx, url)
+	if err != nil {
+		shortURL = ser.ShortURL(longURL)
+		url.LongURL = longURL
+		url.ShortURL = shortURL
+		if err := Repository.Create(ctx, &url); err != nil {
+			return nil, err
+		}
 	}
-	
-	if err := Repository.Create(ctx, &url ); err != nil {
-		return nil, err
-	}
+	shortURL = url.ShortURL
 
 	log.Println("Я положил ссылку в БД и вернул сокращённую")
 	return &desc.PostResponse{
