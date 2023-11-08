@@ -1,4 +1,4 @@
-CREATE TABLE public."URLs"
+CREATE TABLE public."urls"
 (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY,
     "longURL" text NOT NULL,
@@ -6,5 +6,5 @@ CREATE TABLE public."URLs"
     PRIMARY KEY (id)
 );
 
-ALTER TABLE IF EXISTS public."URLs"
+ALTER TABLE IF EXISTS public."urls"
     OWNER to postgres;
